@@ -1,0 +1,81 @@
+## 의존성 주입이란 무엇일까?
+
+**의존성 주입이란 IoC(제어의 역전)원칙을 구현하는 핵심 기술이다.** 
+
+의존성 주입은, 객체 간의 의존성을 외부에서 주입하는 방식으로, 객체 간의 결합도를 낮출 수 있는 방식임
+
+이게 무슨 말이냐면, 우리가 코드를 구현하며 외부 객체가 필요할때 우리는 보통 지금 까지 객체 생성을 통해서 객체를 불러옴
+
+ex) `Student student = new Student();`
+
+이렇게 외부객체를 내가 지금 구현하고있는 메서드 안의 **내부 객체**로 만든것인데, 의존성 주입은 외부객체를 **주입**한다는 개념을 가지고있다.
+
+ex)`private final Student student;`
+
+이것이 바로 의존성 주입이다. 의존성 주입은 메서드가 아닌 클래스 단위에서 하게 되기 때문에 객체생성처럼 메서드에서 내부 객체로 만들 필요가 없고, 객체 생성 로직을 별도로 관리할 수 있어 코드 가독성이 높음
+
+**우리가 의존성 주입을 할 때, IoC는 이를 관리해준다. 이 이유 때문에 IoC와 DI는 서로 깊은 관계가 있다.**
+
+결론
+
+> **의존성 주입은 객체 간의 의존 관계를 외부에서 주입하여 객체의 결합도를 낮추고, 코드의 유연성과 테스트 용이성을 높이는 디자인 패턴이다.**
+> 
+
+## 의존성을 주입하는 방법
+
+### 생성자를 통한 주입
+
+```java
+public class UserService {
+    private final UserRepository userRepository; 
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository; // UserRepostiory 클래스를 의존한다.
+    }
+
+    public void createUser(User user) {
+        userRepository.save(user);
+    }
+}
+```
+
+생성자 주입은 생성자를 통해 의존 객체를 주입받는 방식이다. 생성자에서 필요한 의존 객체를 받아 필드에 할당한다.
+
+### 수정자(Setter)를 통한 주입
+
+```java
+public class UserService {
+    private UserRepository userRepository;
+
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository; // UserRepostiory 클래스를 의존한다.
+    }
+
+    public void createUser(User user) {
+        userRepository.save(user);
+    }
+}
+```
+
+수정자 주입은 Setter 메서드를 통해 의존 객체를 주입받는 방식이다. Setter 메서드를 통해 UserRepository 객체를 주입받는다. 이 방식은 생성자 주입에 비해 의존성이 명확하지 않지만, 선택적인 의존성을 처리할 때 유용하다.
+
+### 필드 주입
+
+```java
+public class UserService {
+    @Autowired
+    private UserRepository userRepository; // UserRepostiory 클래스를 의존한다.
+
+    public void createUser(User user) {
+        userRepository.save(user);
+    }
+}
+```
+
+필드 주입은 필드에 직접 의존 객체를 주입받는 방식이다. @Autowired 어노테이션을 사용하여 스프링 컨테이너가 UserRepository 객체를 주입한다.
+
+> **@Autowired 어노테이션**
+> 
+
+> 이 어노테이션을 사용하게 되면 알아서 의존 객체(Bean)을 찾아서 주입해주며, 의존 객체가 2개 이상이면 오류를 발생 시킨다. 간편하게 의존성 주입을 구현할수 있다.
+>
