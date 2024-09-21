@@ -1,0 +1,44 @@
+## IoC(제어의 역전)란?
+
+프로그래머가 가지고 있던 제어권을 스프링 프레임워크가 가져가는 현상
+
+- 제어의 역전이 일어나면, 프로그래머가 아닌 다른 무언가가 관리를 위임하게 됨
+- Spring 프레임워크는 제어권을 가져가 객체의 생성, 생명주기, 의존성 관리 등이 가능함
+
+---
+
+**컨테이너란? :** 객체를 관리, 저장하고 추가적인 기능을 제공하는 클래스
+
+## IoC 컨테이너란?
+
+- **스프링 프레임워크가 객체를 생성, 관리하고 의존성을 관리해주는 컨테이너**
+- IoC 컨테이너는 인스턴스 생성부터 소멸까지의 인스턴스 생명주기 관리를 대신해준다
+
+(생명주기란? - **객체가 생성되고, 최종적으로 소멸되기까지의 과정**)
+
+**IoC 컨테이너에는 Bean으로 등록된 객체가 존재함**
+
+[스프링 빈](https://www.notion.so/bb8295f4aefd402da4a86fad54eba510?pvs=21)
+
+## IoC컨테이너의 종류
+
+- BeanFactory
+- ApplicationContext
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/d9397a77-d123-4cbe-9a7d-1af72aaddae8/a3062a37-d103-4f3d-bb62-a8a161cb08d6/Untitled.png)
+
+**BeanFactory**
+
+- 가장 기본적인 IoC 컨테이너 인터페이스
+- 빈 객체의 생성, 관리, 의존성 주입 등의 기능을 제공
+- 그러나 대부분은 확장된 ApplicationContext 기능을 사용함
+
+**ApplicationContext**
+
+- BeanFactory를 확장한 IoC 컨테이너 구현체임
+- 자동 빈 등록, 메시지 리소스 핸들링 등 고급 기능을 이용할 수 있음
+- ApplicationContext는 BeanFactory의 서브 인터페이스임
+
+## IoC와 DI의 관계
+
+IoC와 DI는 매우 밀접한 관계를 가지고 있음
