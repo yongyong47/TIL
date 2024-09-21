@@ -1,0 +1,92 @@
+## 스프링 빈(Bean) 이란?
+
+- 스프링 컨테이너(IoC 컨테이너)가 관리하는 자바 객체를 빈 이라고 함
+- IoC 컨테이너는 빈 객체를 인스턴스화, 조립 등의 방식으로 관리함
+
+우리는 객체를 IoC 컨테이너에서 관리하도록 빈에 등록할 수 있음
+
+## 빈 등록 방법
+
+### application.xml 파일에서 빈을 등록
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd"><bean id="person" class="com.example.Person"> <!--빈정의 코드-->
+        <property name="name" value="John Doe" /><property name="age" value="30" /></bean></beans>
+```
+
+스프링의 application.xml 파일에서 빈으로 등록하고 싶은 객체의 속성 값을 지정한다. 이는 객체 자체가 빈으로 등록된 것이 아닌, name의 값이 "John Doe"이고 age의 값이 30인 Pesron 객체가 빈으로 등록된 것이다.
+
+### **Java Config를 통한 빈 등록**
+
+```java
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public DataSource dataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/mydb");
+        dataSource.setUsername("myuser");
+        dataSource.setPassword("mypassword");
+        return dataSource;
+    }
+
+    @Bean
+    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
+    }
+
+    @Bean
+    @Profile("dev")
+    public EmailService devEmailService() {
+        return new DevEmailServiceImpl();
+    }
+
+    @Bean
+    @Profile("prod")
+    public EmailService prodEmailService() {
+        return new ProdEmailServiceImpl();
+    }
+}
+```
+
+java config를 통한 빈 등록을 하는 방법은 빈 객체를 등록하기 위한 클래스가 있는 패키지에서 설정파일(java)를 만든뒤 위와 같이 `@Configuration` 어노테이션과 `@Bean` 어노테이션을 통해 원하는 객체를 빈으로 등록 할 수 있다. `@Bean` 어노테이션이 달린 객체들이 빈으로 등록된다.
+
+### **컴포넌트 스캔을 통한 자동 등록**
+
+```java
+@Component
+public class MyBean {
+    // 빈 정의 코드
+}
+```
+
+컴포넌트 스캔을 통해 빈을 등록하기 위해서는 먼저 빈으로 등록하기 위한 클래스들에게 `@Component` 어노테이션을 지정해주어야 한다.
+
+```java
+@Configuration
+@ComponentScan(basePackages = "com.example.myapp")
+public class AppConfig {
+    // 추가 구성 설정
+}
+```
+
+또, `@Component` 어노테이션이 달린 클래스들을 스프링이 탐지 하기위해서는 Spring 애플리케이션 설정 클래스(예: `@Configuration` 클래스)에 `@ComponentScan` 어노테이션을 추가하여 컴포넌트 스캔을 활성화 해주어야한다. `@ComponentScan`어노테이션은 자신이 등록된 클래스의 동일한 위치에 있는 패키지 ~ 하위 패키지 까지 `@Component` 어노테이션을 스캔하게 된다.
+
+### 자동 의존관계 설정을 통한 등록
+
+```java
+@Service
+public class MyService {
+    private final MyBean myBean;
+
+    public MyService(MyBean myBean) {
+        this.myBean = myBean;
+    }
+}
+```
+
+생성자 주입을 사용하면 MyService 클래스의 인스턴스를 빈객체로 만들 수 있다. `@Service` 어노테이션은 Spring의 컴포넌트 스캔 기능을 사용하여 MyService 클래스를 자동으로 Bean으로 등록하도록 한다. 즉, `@Component` 어노테이션을 사용하여 직접 빈을 등록하는것 없이, 별도의 Bean 등록 코드 없이도 빈을 등록 할 수 있다.
